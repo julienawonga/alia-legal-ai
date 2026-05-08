@@ -72,12 +72,41 @@ Alia utilizes a multi-model, cost-optimized pipeline orchestrated by LangGraph t
 
 ```mermaid
 graph LR
-    A[Bambara Audio Input] --> B[STT API: sudoping01/bambara-asr-v2]
-    B --> C["Gemini 2.5-Pro: Translate Bambara to French"]
-    C --> F["Fine-Tuned Gemma 4-E4B: Legal Reasoning"]
-    F --> G["Gemini 2.5-Pro: Translate French to Bambara"]
-    G --> H[TTS API: facebook/mms-tts-bam]
-    H --> I[Bambara Audio Output];
+    %% Définition des styles (Couleurs pastels et pro)
+    classDef input fill:#e1f5fe,stroke:#01579b,stroke-width:2px,color:#01579b;
+    classDef ai fill:#f3e5f5,stroke:#4a148c,stroke-width:2px,color:#4a148c;
+    classDef output fill:#e8f5e9,stroke:#1b5e20,stroke-width:2px,color:#1b5e20;
+    classDef logic fill:#fff3e0,stroke:#e65100,stroke-width:2px,font-weight:bold;
+
+    subgraph "INPUT"
+        A[fa:fa-microphone Bambara Audio]
+    end
+
+    subgraph "PROCESSING CORE"
+        B(fa:fa-gear STT: sudoping01)
+        C{{"fa:fa-language Translation <br/>(Gemini 2.5 Pro)"}}
+        F[[fa:fa-gavel Legal Reasoning <br/>Fine-Tuned Gemma 4-E4B]]
+        G{{"fa:fa-language Translation <br/>(Gemini 2.5 Pro)"}}
+    end
+
+    subgraph "OUTPUT"
+        H(fa:fa-volume-up TTS: facebook/mms)
+        I[fa:fa-comment Bambara Audio Out]
+    end
+
+    %% Connexions
+    A --> B
+    B --> C
+    C --> F
+    F --> G
+    G --> H
+    H --> I
+
+    %% Application des styles
+    class A input;
+    class B,C,G ai;
+    class F logic;
+    class H,I output;
 ```
 
 ---
