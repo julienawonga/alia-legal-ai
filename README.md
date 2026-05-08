@@ -71,13 +71,13 @@ By training `gemma-4-E4B-it` on this conversational dataset using LoRA adapters,
 Alia utilizes a multi-model, cost-optimized pipeline orchestrated by LangGraph to handle the complexities of voice and memory:
 
 ```mermaid
-graph TD
+graph LR
     A[Bambara Audio Input] --> B[STT API: sudoping01/bambara-asr-v2]
-    B --> C[Gemini 2.5-Pro: Translate Bambara to French]
-    C --> F[Fine-Tuned Gemma 4-E4B: Legal Reasoning]
-    F --> G[Gemini 2.5-Pro: Translate French to Bambara]
+    B --> C["Gemini 2.5-Pro: Translate Bambara to French"]
+    C --> F["Fine-Tuned Gemma 4-E4B: Legal Reasoning"]
+    F --> G["Gemini 2.5-Pro: Translate French to Bambara"]
     G --> H[TTS API: facebook/mms-tts-bam]
-    H --> I[Bambara Audio Output]
+    H --> I[Bambara Audio Output];
 ```
 
 ---
