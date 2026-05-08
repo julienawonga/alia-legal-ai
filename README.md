@@ -1,18 +1,19 @@
-# ⚖️ Alia: Democratizing Ivorian Labor Law through Voice and Gemma 4
+# ⚖️  Alia: Democratizing Ivorian Labor Law through Voice and Gemma 4
+### Bridging the Legal Gap for Millions of Dioula/Bambara Speakers in Ivory Coast
 
 [![Gemma Impact Challenge](https://img.shields.io/badge/Gemma_Impact_Challenge-Submission-blue.svg)](https://www.kaggle.com/competitions/gemma-impact-challenge)
 [![Track: Digital Equity](https://img.shields.io/badge/Track-Digital_Equity_%26_Inclusivity-orange.svg)]()
 [![Model: Gemma 4](https://img.shields.io/badge/Model-Gemma_4_E4B--it_Fine--Tuned-green.svg)]()
 
-> **"Every challenge has a perfect match, and the clock is ticking. Real innovation happens when we build for the places that need it most."**
+> **"Every challenge has a perfect match, and the clock is ticking. Real innovation happens when we build for the places that need it most. Coming off the heels of May Day (International Workers' Day), the gap between labor rights and labor reality has never been more apparent."**
 
-**Alia** is a pioneering bilingual legal assistant designed to democratize access to labor law in Côte d'Ivoire. By combining the power of a fine-tuned **Gemma 4** model with a modular, voice-first pipeline, Alia provides over 30 million Bambara/Dioula speakers with direct, accurate, and actionable legal guidance in their native tongue.
+**Alia** is a pioneering bilingual legal assistant designed to democratize access to labor law in Ivory Coast. By combining the power of a fine-tuned **Gemma 4** model with a modular, voice-first pipeline, Alia provides millions of Bambara/Dioula speakers with direct, accurate, and actionable legal guidance in their native tongue.
 
 ---
 
 ## 📖 The Context & The "Wow" Factor
 
-In Côte d'Ivoire, the **informal sector accounts for approximately 90% of the total labor force**. These workers—street vendors, agricultural laborers, small-scale mechanics—are theoretically protected by the Ivorian *Code du Travail*, but in reality, they operate completely outside of legal safety nets.
+While the world recently celebrated International Workers' Day, for 90% of the Ivorian labor force, rights remain a luxury of the elite. In Ivory Coast, the **informal sector accounts for approximately 90% of the total labor force**. These workers—street vendors, agricultural laborers, small-scale mechanics—are theoretically protected by the Ivorian *Code du Travail*, but in reality, they operate completely outside of legal safety nets.
 
 When an informal worker faces an unfair dismissal or hazardous working conditions, the barriers to justice are insurmountable:
 1. **The Linguistic Divide**: The law is written in formal, complex French. While general literacy is improving, legal literacy in French remains a massive barrier for millions who communicate primarily in local languages like Bambara/Dioula.
@@ -62,7 +63,7 @@ def generate_examples(entry):
 ```
 
 ### 3. Supervised Fine-Tuning (SFT) & Grounding
-By training `gemma-4-E4B-it` on this conversational dataset using LoRA adapters, the model learned the specific cadence, structure, and exact citations of Ivorian law. The resulting weights (`julienawonga/gemma-4-ivorian-labor-law-merged`) ensure that when Alia answers a question, it grounds its response by explicitly citing the relevant article, refusing out-of-domain prompts and eliminating generic "US-centric" legal hallucinations.
+By training `unsloth/gemma-4-E4B-it` on this conversational dataset using LoRA adapters, the model learned the specific cadence, structure, and exact citations of Ivorian law. The resulting weights (`julienawonga/gemma-4-ivorian-labor-law-merged`) ensure that when Alia answers a question, it grounds its response by explicitly citing the relevant article, refusing out-of-domain prompts and eliminating generic "US-centric" legal hallucinations.
 
 ---
 
@@ -122,12 +123,17 @@ gcloud run deploy alia-app \
     --allow-unauthenticated \
     --set-secrets="GEMINI_API_KEY=GEMINI_API_KEY:latest,LLM_API_KEY=LLM_API_KEY:latest,SPEECH_API_KEY=SPEECH_API_KEY:latest"
 ```
+We deployed our fine-tuned **Gemma 4-E4B** on Cloud Run with **NVIDIA L4 GPUs**, leveraging **scale-to-zero** to ensure a production-ready yet cost-efficient architecture. This setup allows Alia to be highly responsive when needed while incurring zero costs during idle periods.
 
 ---
 
-## 📎 Submission Links
-- **Live Demo**: [https://alia-app-URL.run.app]
+## 👥 Collaborators
+- [Add Collaborator Name] - [Role/Contribution]
+- **Julien Awon'ga** - Data Scientist
+
+## 📦 Artefacts & Submission Links
 - **Video Pitch**: [YouTube Link]
-- **Gemma 4 Weights**: [HuggingFace / Kaggle Model Link]
+- **Gemma 4 Weights**: [[HuggingFace](https://huggingface.co/julienawonga/gemma-4-ivorian-labor-law-merged/)]
+- **Public Repository**: [GitHub Link](https://github.com/julienawonga/alia-legal-ai)
 
 *Built with ❤️ for the Gemma Impact Challenge.*
