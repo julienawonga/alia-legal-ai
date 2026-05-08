@@ -1,0 +1,24 @@
+[project]
+name = "kaggle-challenge"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "bcrypt>=4.3.0",
+    "google-genai>=1.14.0",
+    "langchain-core>=0.2.20",
+    "langgraph>=0.1.19",
+    "openai>=1.82.0",
+    "python-dotenv>=1.1.0",
+    "pyyaml>=6.0.2",
+    "requests>=2.32.0",
+    "streamlit>=1.45.0",
+    "streamlit-authenticator>=0.4.1",
+    "tiktoken>=0.7.0",
+]
+
+[dependency-groups]
+dev = [
+    "pre-commit>=4.6.0",
+]
