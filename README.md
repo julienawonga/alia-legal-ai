@@ -71,42 +71,49 @@ By training `gemma-4-E4B-it` on this conversational dataset using LoRA adapters,
 Alia utilizes a multi-model, cost-optimized pipeline orchestrated by LangGraph to handle the complexities of voice and memory:
 
 ```mermaid
-graph LR
-    %% Définition des styles (Couleurs pastels et pro)
-    classDef input fill:#e1f5fe,stroke:#01579b,stroke-width:2px,color:#01579b;
-    classDef ai fill:#f3e5f5,stroke:#4a148c,stroke-width:2px,color:#4a148c;
-    classDef output fill:#e8f5e9,stroke:#1b5e20,stroke-width:2px,color:#1b5e20;
-    classDef logic fill:#fff3e0,stroke:#e65100,stroke-width:2px,font-weight:bold;
-
-    subgraph "INPUT"
-        A[fa:fa-microphone Bambara Audio]
+---
+config:
+  layout: elk
+---
+flowchart TB
+    subgraph UI["User Interface"]
+      direction LR
+      Mic(["🎙️ Bambara Audio Input"])
+      Speaker(["🔊 Bambara Audio Output"])
     end
 
-    subgraph "PROCESSING CORE"
-        B(fa:fa-gear STT: sudoping01)
-        C{{"fa:fa-language Translation <br/>(Gemini 2.5 Pro)"}}
-        F[[fa:fa-gavel Legal Reasoning <br/>Fine-Tuned Gemma 4-E4B]]
-        G{{"fa:fa-language Translation <br/>(Gemini 2.5 Pro)"}}
+    subgraph Conv["Conversion Layer (STT / TTS)"]
+      direction TB
+      ASR["STT API<br/>sudoping01/bambara-asr-v2"]
+      TTS["TTS API<br/>facebook/mms-tts-bam"]
     end
 
-    subgraph "OUTPUT"
-        H(fa:fa-volume-up TTS: facebook/mms)
-        I[fa:fa-comment Bambara Audio Out]
+    subgraph AI["Artificial Intelligence Core"]
+      direction TB
+      Transl_FR["Translation Module FR ↔ BAM<br/>(Gemini 2.5-Pro)"]
+      Legal["Legal Reasoning Engine<br/>(Fine‑Tuned Gemma 4‑E4B)"]
     end
 
-    %% Connexions
-    A --> B
-    B --> C
-    C --> F
-    F --> G
-    G --> H
-    H --> I
+    %% Data flow
+    Mic --> ASR
+    ASR --> Transl_FR
+    Transl_FR --> Legal
+    Legal --> Transl_FR
+    Transl_FR --> TTS
+    TTS --> Speaker
 
-    %% Application des styles
-    class A input;
-    class B,C,G ai;
-    class F logic;
-    class H,I output;
+    %% Styles
+    classDef ui fill:#eef2ff,stroke:#818cf8
+    classDef conv fill:#f0fdfa,stroke:#2dd4bf
+    classDef ai fill:#f5f3ff,stroke:#a78bfa
+    classDef api fill:#fff7ed,stroke:#fb923c
+    classDef model fill:#f0fdf4,stroke:#4ade80
+
+    class UI ui
+    class Conv conv
+    class AI ai
+    class ASR,TTS api
+    class Legal model
 ```
 
 ---
