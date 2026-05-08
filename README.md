@@ -12,13 +12,13 @@
 
 ## 📖 The Context & The "Wow" Factor
 
-In Côte d'Ivoire, the **informal sector accounts for approximately 90% of the total labor force**. These workers—street vendors, agricultural laborers, small-scale mechanics—are theoretically protected by the Ivorian *Code du Travail*, but in reality, they operate completely outside of legal safety nets. 
+In Côte d'Ivoire, the **informal sector accounts for approximately 90% of the total labor force**. These workers—street vendors, agricultural laborers, small-scale mechanics—are theoretically protected by the Ivorian *Code du Travail*, but in reality, they operate completely outside of legal safety nets.
 
 When an informal worker faces an unfair dismissal or hazardous working conditions, the barriers to justice are insurmountable:
 1. **The Linguistic Divide**: The law is written in formal, complex French. While general literacy is improving, legal literacy in French remains a massive barrier for millions who communicate primarily in local languages like Bambara/Dioula.
 2. **The Cost of Justice**: Seeking advice from a human lawyer is financially impossible for informal workers.
 
-**Alia breaks this barrier.** It strips away the requirements for literacy, French fluency, and legal fees. A user simply speaks their legal problem in Bambara. Alia processes the audio, consults a highly specialized Gemma 4 "Legal Brain", and speaks the legal advice back to them in their native tongue. 
+**Alia breaks this barrier.** It strips away the requirements for literacy, French fluency, and legal fees. A user simply speaks their legal problem in Bambara. Alia processes the audio, consults a highly specialized Gemma 4 "Legal Brain", and speaks the legal advice back to them in their native tongue.
 
 This is true **Digital Equity**—putting the power of the law directly into the hands of the workers who build the country, closing the justice gap for 90% of the workforce.
 
@@ -26,7 +26,7 @@ This is true **Digital Equity**—putting the power of the law directly into the
 
 ## 🧠 How We Implemented Gemma 4 (The "Source of Truth")
 
-To build a model capable of understanding and citing complex Ivorian law without hallucinating, we could not rely on standard Retrieval-Augmented Generation (RAG) alone. We needed a model that natively "spoke" the law. 
+To build a model capable of understanding and citing complex Ivorian law without hallucinating, we could not rely on standard Retrieval-Augmented Generation (RAG) alone. We needed a model that natively "spoke" the law.
 
 We chose **`unsloth/gemma-4-E4B-it`** as our base model. Its parameter efficiency makes it ideal for cost-effective deployment (a critical requirement for public-service/NGO tools), while its frontier intelligence handles complex legal reasoning.
 
@@ -34,7 +34,7 @@ We chose **`unsloth/gemma-4-E4B-it`** as our base model. Its parameter efficienc
 We digitized and structured the entire corpus of the Ivorian Labor Code and Social Security laws into **2,357 discrete JSON files**. Each file represents a specific article (e.g., `art_100_loi_n_99_477_du_02_aout_1999_portant_modification_du_code_de_prevoyance_sociale.json`), containing metadata such as the legal field, chapter, status (e.g., "EN VIGUEUR"), and the exact textual content.
 
 ### 2. Synthetic Conversational Generation
-Using a custom Python pipeline, we transformed these 2,357 static JSON files into a rich, multi-turn conversational dataset. For every single article, our script automatically generated diverse User/Assistant interactions. 
+Using a custom Python pipeline, we transformed these 2,357 static JSON files into a rich, multi-turn conversational dataset. For every single article, our script automatically generated diverse User/Assistant interactions.
 
 Here is an excerpt of how we engineered the training data:
 
