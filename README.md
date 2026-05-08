@@ -70,52 +70,7 @@ By training `gemma-4-E4B-it` on this conversational dataset using LoRA adapters,
 
 Alia utilizes a multi-model, cost-optimized pipeline orchestrated by LangGraph to handle the complexities of voice and memory:
 
-```mermaid
----
-config:
-  layout: elk
----
-flowchart TB
-    subgraph UI["User Interface"]
-      direction LR
-      Mic(["🎙️ Bambara Audio Input"])
-      Speaker(["🔊 Bambara Audio Output"])
-    end
-
-    subgraph Conv["Conversion Layer (STT / TTS)"]
-      direction TB
-      ASR["STT API<br/>sudoping01/bambara-asr-v2"]
-      TTS["TTS API<br/>facebook/mms-tts-bam"]
-    end
-
-    subgraph AI["Artificial Intelligence Core"]
-      direction TB
-      Transl_FR["Translation Module FR ↔ BAM<br/>(Gemini 2.5-Pro)"]
-      Legal["Legal Reasoning Engine<br/>(Fine‑Tuned Gemma 4‑E4B)"]
-    end
-
-    %% Data flow
-    Mic --> ASR
-    ASR --> Transl_FR
-    Transl_FR --> Legal
-    Legal --> Transl_FR
-    Transl_FR --> TTS
-    TTS --> Speaker
-
-    %% Styles
-    classDef ui fill:#eef2ff,stroke:#818cf8
-    classDef conv fill:#f0fdfa,stroke:#2dd4bf
-    classDef ai fill:#f5f3ff,stroke:#a78bfa
-    classDef api fill:#fff7ed,stroke:#fb923c
-    classDef model fill:#f0fdf4,stroke:#4ade80
-
-    class UI ui
-    class Conv conv
-    class AI ai
-    class ASR,TTS api
-    class Legal model
-```
-
+![Technical Architecture](./assets/Alia.png)
 ---
 
 ## 📂 Repository Structure
