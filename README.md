@@ -70,7 +70,9 @@ By training `gemma-4-E4B-it` on this conversational dataset using LoRA adapters,
 
 Alia utilizes a multi-model, cost-optimized pipeline orchestrated by LangGraph to handle the complexities of voice and memory:
 
-![Technical Architecture](./assets/Alia.png)
+<p align="center">
+  <img src="./assets/Alia.png" alt="Technical Architecture" width="300">
+</p>
 ---
 
 ## 📂 Repository Structure
