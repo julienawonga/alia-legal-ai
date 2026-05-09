@@ -1,0 +1,62 @@
+steps:
+  # 1. Build the container image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', '$_REGION-docker.pkg.dev/$PROJECT_ID/$_REPOSITORY/$_IMAGE_NAME', '.']
+    
+  # 2. Push the container image to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', '$_REGION-docker.pkg.dev/$PROJECT_ID/$_REPOSITORY/$_IMAGE_NAME']
+
+  # 3. Deploy to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - '$_SERVICE_NAME'
+      - '--image'
+      - '$_REGION-docker.pkg.dev/$PROJECT_ID/$_REPOSITORY/$_IMAGE_NAME'
+      - '--region'
+      - '$_REGION'
+      - '--port'
+      - '8080'
+      - '--cpu'
+      - '$_CPU'
+      - '--memory'
+      - '$_MEMORY'
+      - '--gpu'
+      - '$_GPU'
+      - '--gpu-type'
+      - '$_GPU_TYPE'
+      - '--cpu-boost'
+      - '--no-cpu-throttling'
+      - '--timeout'
+      - '3600'
+      - '--min-instances'
+      - '0'
+      - '--max-instances'
+      - '$_MAX_INSTANCES'
+      - '--startup-probe=tcpSocket.port=8080,periodSeconds=10,failureThreshold=90,timeoutSeconds=5'
+      - '--set-env-vars=MODEL_ID=$_MODEL_ID,SERVED_MODEL_NAME=$_SERVED_MODEL_NAME'
+      - '--set-secrets=VLLM_API_KEY=$_SECRET_NAME:1,HF_TOKEN=$_HF_TOKEN_SECRET:1'
+
+images:
+  - '$_REGION-docker.pkg.dev/$PROJECT_ID/$_REPOSITORY/$_IMAGE_NAME'
+
+substitutions:
+  _REGION: '<REGION>'
+  _REPOSITORY: '<RESSOURCE_REPOSITORY>'
+  _IMAGE_NAME: '<MODEL_IMAGE_NAME>'
+  _SERVICE_NAME: '<SERVICE_NAME>'
+  _CPU: '<CPU>'
+  _MEMORY: '<MEMORY>'
+  _GPU: '<GPU>'
+  _GPU_TYPE: '<GPU_TYPE>'
+  _MAX_INSTANCES: '<MAX_INSTANCES>'
+  _MODEL_ID: '<MODEL_ID>'
+  _SERVED_MODEL_NAME: '<SERVED_MODEL_NAME>'
+  _SECRET_NAME: '<SECRET_NAME>'
+  _HF_TOKEN_SECRET: '<HF_TOKEN_SECRET>'
+
+options:
+  logging: CLOUD_LOGGING_ONLY

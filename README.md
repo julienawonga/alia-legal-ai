@@ -11,9 +11,9 @@
 
 ---
 
-## 📖 The Context & The "Wow" Factor
+## The Context & The "Wow" Factor
 
-While the world recently celebrated International Workers' Day, for 90% of the Ivorian labor force, rights remain a luxury of the elite. In Ivory Coast, the **informal sector accounts for approximately 90% of the total labor force**. These workers—street vendors, agricultural laborers, small-scale mechanics—are theoretically protected by the Ivorian *Code du Travail*, but in reality, they operate completely outside of legal safety nets.
+While the world recently celebrated International Workers' Day, for 90% of the Ivorian labor force, rights remain a luxury of the elite. In Ivory Coast, the **informal sector represents a large majority of employment in Côte d'Ivoire (commonly estimated between 80%–90% depending on the source) [ILOSTAT](https://ilostat.ilo.org/data/country-profiles/civ/)**. These workers—street vendors, agricultural laborers, small-scale mechanics—are theoretically protected by the Ivorian *Code du Travail*, but in reality, they operate completely outside of legal safety nets.
 
 When an informal worker faces an unfair dismissal or hazardous working conditions, the barriers to justice are insurmountable:
 1. **The Linguistic Divide**: The law is written in formal, complex French. While general literacy is improving, legal literacy in French remains a massive barrier for millions who communicate primarily in local languages like Bambara/Dioula.
@@ -25,14 +25,14 @@ This is true **Digital Equity**—putting the power of the law directly into the
 
 ---
 
-## 🧠 How We Implemented Gemma 4 (The "Source of Truth")
+## How We Implemented Gemma 4 (The "Source of Truth")
 
 To build a model capable of understanding and citing complex Ivorian law without hallucinating, we could not rely on standard Retrieval-Augmented Generation (RAG) alone. We needed a model that natively "spoke" the law.
 
-We chose **`unsloth/gemma-4-E4B-it`** as our base model. Its parameter efficiency makes it ideal for cost-effective deployment (a critical requirement for public-service/NGO tools), while its frontier intelligence handles complex legal reasoning.
+We chose **`unsloth/gemma-4-E4B-it`** as our base model. Its parameter efficiency makes it ideal for cost-effective deployment (a critical requirement for public-service/NGO tools), while maintaining strong instruction-following and reasoning capabilities.
 
 ### 1. Curating the Ivorian Legal Dataset
-We digitized and structured the entire corpus of the Ivorian Labor Code and Social Security laws into **2,357 discrete JSON files**. Each file represents a specific article (e.g., `art_100_loi_n_99_477_du_02_aout_1999_portant_modification_du_code_de_prevoyance_sociale.json`), containing metadata such as the legal field, chapter, status (e.g., "EN VIGUEUR"), and the exact textual content.
+We digitized and structured a structured corpus of Ivorian labor law and related legal texts of the Ivorian Labor Code and Social Security laws into **2,357 discrete JSON files**. Each file represents a specific article (e.g., `art_100_loi_n_99_477_du_02_aout_1999_portant_modification_du_code_de_prevoyance_sociale.json`), containing metadata such as the legal field, chapter, status (e.g., "EN VIGUEUR"), and the exact textual content.
 
 ### 2. Synthetic Conversational Generation
 Using a custom Python pipeline, we transformed these 2,357 static JSON files into a rich, multi-turn conversational dataset. For every single article, our script automatically generated diverse User/Assistant interactions.
@@ -63,11 +63,11 @@ def generate_examples(entry):
 ```
 
 ### 3. Supervised Fine-Tuning (SFT) & Grounding
-By training `unsloth/gemma-4-E4B-it` on this conversational dataset using LoRA adapters, the model learned the specific cadence, structure, and exact citations of Ivorian law. The resulting weights (`julienawonga/gemma-4-ivorian-labor-law-merged`) ensure that when Alia answers a question, it grounds its response by explicitly citing the relevant article, refusing out-of-domain prompts and eliminating generic "US-centric" legal hallucinations.
+By training `unsloth/gemma-4-E4B-it` on this conversational dataset using LoRA adapters, the model learned the specific cadence, structure, and exact citations of Ivorian law. The resulting weights (`julienawonga/gemma-4-ivorian-labor-law-merged`) ensure that when Alia answers a question, it grounds its response by explicitly citing the relevant article, refusing out-of-domain prompts and significantly reduces hallucinations by encouraging grounded, article-based responses.
 
 ---
 
-## 🏗️ Technical Architecture
+## Technical Architecture
 
 Alia utilizes a multi-model, cost-optimized pipeline orchestrated by LangGraph to handle the complexities of voice and memory:
 
@@ -76,7 +76,29 @@ Alia utilizes a multi-model, cost-optimized pipeline orchestrated by LangGraph t
 </p>
 ---
 
-## 📂 Repository Structure
+## 🛠️ The Engine: Technical Rigor & Production Architecture
+
+The `engine/` directory contains the complete lifecycle of the Alia assistant, proving the engineering depth behind the demo.
+
+### 1. Advanced Fine-Tuning (`engine/fine-tuning/`)
+- **Base Model**: `unsloth/gemma-4-E4B-it` (optimized for parameter-efficient fine-tuning).
+- **Methodology**: Supervised Fine-Tuning (SFT) using **LoRA** (Rank 16, Alpha 16).
+- **Optimization**: We utilized the `train_on_responses_only` technique to ensure the model’s loss calculation focused exclusively on legal accuracy in the assistant's responses.
+
+### 2. Export & Model Fusion (`engine/export_and_fusion/`)
+- **Process**: Merged LoRA adapters back into the base model in **16-bit (bfloat16)** precision.
+- **VLLM Compatibility**: Automated cleaning of `config.json` (removing PEFT traces) to allow the model to run natively as a `Gemma4ForConditionalGeneration` architecture in high-performance serving engines.
+
+### 3. Production Deployment (`engine/deployment/`)
+- **Legal LLM**: Deployed via **vLLM** on Google Cloud Run with **GPU acceleration (L4)**, providing OpenAI-compatible endpoints with sub-second latency.
+- **Speech Stack**: A dedicated FastAPI service managing:
+    - **ASR**: `sudoping01/bambara-asr-v2` for high-fidelity Bambara transcription.
+    - **TTS**: `facebook/mms-tts-bam` for natural-sounding Bambara speech synthesis.
+    - **Security**: Secured via GCP Secret Manager and custom API Key headers.
+
+---
+
+## Repository Structure
 
 - `app.py`: The main Streamlit bilingual UI (French/Bambara) and entry point.
 - `pipeline/orchestrator.py`: The LangGraph state machine managing the multi-model flow.
@@ -87,7 +109,7 @@ Alia utilizes a multi-model, cost-optimized pipeline orchestrated by LangGraph t
 
 ---
 
-## 🚀 Local Setup & Deployment
+## Local Setup & Deployment
 
 ### Prerequisites
 - Python 3.12+
@@ -95,7 +117,7 @@ Alia utilizes a multi-model, cost-optimized pipeline orchestrated by LangGraph t
 
 ### 1. Installation
 ```bash
-git clone https://github.com/YOUR_USERNAME/alia-legal-assistant.git
+git clone https://github.com/julienawonga/alia-legal-assistant.git
 cd alia-legal-assistant
 uv venv
 source .venv/bin/activate  # On Windows: .\.venv\Scripts\activate
@@ -119,7 +141,7 @@ The application is fully Dockerized and ready for serverless deployment:
 ```bash
 gcloud run deploy alia-app \
     --source . \
-    --region us-east4 \
+    --region <REGION> \
     --allow-unauthenticated \
     --set-secrets="GEMINI_API_KEY=GEMINI_API_KEY:latest,LLM_API_KEY=LLM_API_KEY:latest,SPEECH_API_KEY=SPEECH_API_KEY:latest"
 ```
@@ -127,7 +149,27 @@ We deployed our fine-tuned **Gemma 4-E4B** on Cloud Run with **NVIDIA L4 GPUs**,
 
 ---
 
-## 👥 Collaborators
+## Limitations
+
+- The model is trained on a subset of Ivorian legal texts and may not cover all edge cases.
+- Responses are generated based on static legal data and may not reflect recent legal updates.
+- The assistant does not replace professional legal advice.
+- Bambara translation quality depends on external models and may introduce noise.
+
+---
+## Why Not RAG?
+
+We deliberately chose fine-tuning over a pure RAG approach:
+
+- Legal answers require structured, repeatable citation patterns
+- The dataset is relatively bounded and stable
+- Fine-tuning improves latency and reduces system complexity
+
+However, future iterations could combine SFT + RAG for improved coverage and updatability.
+
+---
+
+## Collaborators
 - [Add Collaborator Name] - [Role/Contribution]
 - **Julien Awon'ga** - Data Scientist
 

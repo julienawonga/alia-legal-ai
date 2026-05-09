@@ -1,0 +1,52 @@
+steps:
+  # 1. Build the Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - '$_REGION-docker.pkg.dev/$PROJECT_ID/$_REPOSITORY/$_IMAGE_NAME:latest'
+      - '.'
+
+  # 2. Push the image to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - '$_REGION-docker.pkg.dev/$PROJECT_ID/$_REPOSITORY/$_IMAGE_NAME:latest'
+
+  # 3. Deploy to Cloud Run with CPU
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - '$_SERVICE_NAME'
+      - '--image'
+      - '$_REGION-docker.pkg.dev/$PROJECT_ID/$_REPOSITORY/$_IMAGE_NAME:latest'
+      - '--region'
+      - '$_REGION'
+      - '--cpu'
+      - '$_CPU'
+      - '--memory'
+      - '$_MEMORY'
+      - '--gpu'
+      - '$_GPU'
+      - '--gpu-type'
+      - '$_GPU_TYPE'
+      - '--min-instances=0'
+      - '--max-instances=1'
+      - '--execution-environment'
+      - 'gen2'
+      - '--set-env-vars=HF_HOME=/tmp'
+      - '--set-secrets=HF_TOKEN=$_HF_TOKEN_SECRET:1,API_KEY=$_API_KEY_SECRET:1'
+
+substitutions:
+  _REGION: '<REGION>'
+  _REPOSITORY: '<RESSOURCE_REPOSITORY>'
+  _IMAGE_NAME: '<IMAGE_NAME>'
+  _SERVICE_NAME: '<SERVICE_NAME>'
+  _CPU: '<CPU>'
+  _MEMORY: '<MEMORY>'
+  _GPU: '<GPU>'
+  _GPU_TYPE: '<GPU_TYPE>'
+  _HF_TOKEN_SECRET: '<HF_TOKEN_SECRET>'
+  _API_KEY_SECRET: '<API_KEY_SECRET>'
