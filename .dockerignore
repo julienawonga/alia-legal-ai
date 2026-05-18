@@ -1,6 +1,5 @@
 .git
 .gitignore
-.env
 .env.example
 .venv/
 venv/
@@ -19,3 +18,5 @@ Dockerfile
 *.mp3
 *.m4a
 *.ogg
+
+*.env

@@ -7,7 +7,7 @@
 
 > **"Every challenge has a perfect match, and the clock is ticking. Real innovation happens when we build for the places that need it most. Coming off the heels of May Day (International Workers' Day), the gap between labor rights and labor reality has never been more apparent."**
 
-**Alia** is a pioneering bilingual legal assistant designed to democratize access to labor law in Ivory Coast. By combining the power of a fine-tuned **Gemma 4** model with a modular, voice-first pipeline, Alia provides millions of Bambara/Dioula speakers with direct, accurate, and actionable legal guidance in their native tongue.
+**Alia** is a pioneering bilingual legal assistant designed to democratize access to labor law in Ivory Coast. Powered at its core by a fine-tuned **Gemma 4 model**, and extended through a modular voice-first pipeline, Alia provides millions of Bambara/Dioula speakers with direct, accurate, and actionable legal guidance in their native tongue.
 
 ---
 
@@ -81,6 +81,7 @@ Alia utilizes a multi-model, cost-optimized pipeline orchestrated by LangGraph t
 The `engine/` directory contains the complete lifecycle of the Alia assistant, proving the engineering depth behind the demo.
 
 ### 1. Advanced Fine-Tuning (`engine/fine-tuning/`)
+- **Notebook**: [`engine/fine-tuned-gemma4-unsloth.ipynb`](./engine/fine-tuned-gemma4-unsloth.ipynb)
 - **Base Model**: `unsloth/gemma-4-E4B-it` (optimized for parameter-efficient fine-tuning).
 - **Methodology**: Supervised Fine-Tuning (SFT) using **LoRA** (Rank 16, Alpha 16).
 - **Optimization**: We utilized the `train_on_responses_only` technique to ensure the model’s loss calculation focused exclusively on legal accuracy in the assistant's responses.
@@ -103,7 +104,7 @@ The `engine/` directory contains the complete lifecycle of the Alia assistant, p
 - `app.py`: The main Streamlit bilingual UI (French/Bambara) and entry point.
 - `pipeline/orchestrator.py`: The LangGraph state machine managing the multi-model flow.
 - `services/legal_llm.py`: Integration with the fine-tuned Gemma 4 API.
-- `services/translation.py`: Gemini integrations for the cross-lingual bridge (Bambara ↔ French).
+- `services/translation.py`: Multilingual bridge (Bambara ↔ French), currently powered by Gemini API (planned migration to Gemma 4 multilingual in next iteration)
 - `Dockerfile`: Production-ready, stateless container configuration for Google Cloud Run.
 - `config.yaml`: Secure authentication and session management.
 
@@ -114,6 +115,12 @@ The `engine/` directory contains the complete lifecycle of the Alia assistant, p
 ### Prerequisites
 - Python 3.12+
 - `uv` (recommended) or `pip`
+
+### Pre-Installation
+- Go to engine/deployement
+- Deploy the legal LLM on GPU-accelerated Cloud Run and note the endpoint URL.
+- Deploy the Speech API on Cloud Run and note the endpoint URL.
+- Set up GCP Secret Manager with your API keys for Gemini, LLM, and Speech services.
 
 ### 1. Installation
 ```bash
@@ -143,9 +150,30 @@ gcloud run deploy alia-app \
     --source . \
     --region <REGION> \
     --allow-unauthenticated \
-    --set-secrets="GEMINI_API_KEY=GEMINI_API_KEY:latest,LLM_API_KEY=LLM_API_KEY:latest,SPEECH_API_KEY=SPEECH_API_KEY:latest"
+    --set-secrets="GEMINI_API_KEY=GEMINI_API_KEY:1,LLM_API_KEY=LLM_API_KEY:1,SPEECH_API_KEY=SPEECH_API_KEY:1"
 ```
 We deployed our fine-tuned **Gemma 4-E4B** on Cloud Run with **NVIDIA L4 GPUs**, leveraging **scale-to-zero** to ensure a production-ready yet cost-efficient architecture. This setup allows Alia to be highly responsive when needed while incurring zero costs during idle periods.
+
+## ⚖️ Deployment Trade-offs
+
+### Why Cloud GPU for the Hackathon?
+
+We deploy Gemma 4 on GPU infrastructure to:
+
+- Ensure low latency for voice interactions (<2s)
+- Provide a stable and testable demo environment
+- Showcase the full capabilities of the model
+
+### Path to Real-World Accessibility
+
+For real-world deployment in low-resource environments:
+
+- Quantized Gemma 4 (4-bit) can run on consumer hardware
+- Offline inference removes dependency on internet access
+- Community-based deployment (NGOs, local centers)
+
+**Hackathon = reliability and demonstration**  
+**Real-world = accessibility and decentralization**
 
 ---
 
@@ -155,6 +183,10 @@ We deployed our fine-tuned **Gemma 4-E4B** on Cloud Run with **NVIDIA L4 GPUs**,
 - Responses are generated based on static legal data and may not reflect recent legal updates.
 - The assistant does not replace professional legal advice.
 - Bambara translation quality depends on external models and may introduce noise.
+- Translation layer currently depends on Gemini API 
+  (not fully open-source — roadmap item for Gemma 4 migration).
+- Benchmark scores similar to base model on general metrics; 
+  domain-specific advantage requires Ivorian-specific evaluation sets.
 
 ---
 ## Why Not RAG?
@@ -174,7 +206,8 @@ However, future iterations could combine SFT + RAG for improved coverage and upd
 - **Julien Awon'ga** - Data Scientist
 
 ## 📦 Artefacts & Submission Links
-- **Video Pitch**: [YouTube Link]
+- **Video Pitch**: [YouTube Link](https://youtu.be/BJsQIniDFeo)
+- **Fine-Tuning Notebook**: [`engine/fine-tuned-gemma4-unsloth.ipynb`](./engine/fine-tuned-gemma4-unsloth.ipynb)
 - **Gemma 4 Weights**: [[HuggingFace](https://huggingface.co/julienawonga/gemma-4-ivorian-labor-law-merged/)]
 - **Public Repository**: [GitHub Link](https://github.com/julienawonga/alia-legal-ai)
 

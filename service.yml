@@ -1,0 +1,45 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: alia-app
+  annotations:
+    run.googleapis.com/ingress: all
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/maxScale: "10"
+    spec:
+      containers:
+      - image: gcr.io/alia-run-ai-9e6e/alia-app
+        ports:
+        - name: http1
+          containerPort: 8080
+        env:
+        - name: LLM_BASE_URL
+          value: https://alia-law-llm-565913209404.us-east4.run.app/v1/
+        - name: SPEECH_API_BASE_URL
+          value: https://bambara-tts-asr-565913209404.us-east4.run.app
+        - name: LLM_MODEL_ID
+          value: julienawonga/gemma-4-ivorian-labor-law-merged
+        - name: GEMINI_TEXT_MODEL
+          value: gemini-2.5-pro
+        - name: LLM_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: LLM_API_KEY
+              key: "1"
+        - name: GEMINI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: GEMINI_API_KEY
+              key: "1"
+        - name: SPEECH_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: SPEECH_API_KEY
+              key: "1"
+        resources:
+          limits:
+            cpu: "1"
+            memory: 512Mi

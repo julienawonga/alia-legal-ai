@@ -36,3 +36,7 @@ Thumbs.db
 .secrets.baseline
 
 config.yaml
+
+.env
+
+service.yaml
